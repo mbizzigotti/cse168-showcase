@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rendering Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+  <canvas id="bg-canvas"></canvas>
+  <div class="header-content">
+    <h1 class="border">Rendering Portfolio</h1>
+    <p class="border">UCSD CSE 168 Computer Graphics: Rendering II</p>
+	<div>
+		<!-- TODO: target="_blank" -->
+		<a href=".">Mitchell Bizzigotti</a>
+		<a href=".">Amaan Mohammed</a>
+	</div>
+  </div>
+  </header>
+
+  <main>
+    <section style="background-color: #111;">
+      <h2>Assignment 4: Multiple Importance Sampling (MIS)</h2>
+      <div class="gallery">
+        <div class="thumb" data-full="renders/cornellBoxWithSpheres.png">
+          <img src="renders/cornellBoxWithSpheres.png" alt="Render 1" />
+          <p>Cornell Box</p>
+        </div>
+        <div class="thumb" data-full="renders/mclarenf1.png">
+          <img src="renders/mclarenf1.png" alt="Render 2" />
+          <p>Mclaren F1 (Model by <a href="https://sketchfab.com/Alex.Ka." target="_blank">Alex.Ka.</a>)</p>
+        </div>
+        <div class="thumb" data-full="renders/mclarenf1_2.png">
+          <img src="renders/mclarenf1_2.png" alt="Render 3" />
+          <p>Mclaren F1 (Model by <a href="https://sketchfab.com/Alex.Ka." target="_blank">Alex.Ka.</a>)</p>
+        </div>
+      </div>
+    </section>
+	
+    <section>
+      <h2>Final Project (WIP)</h2>
+      <div class="gallery">
+        <div class="thumb" data-full="renders/mclarenf1_envmap_dld.png">
+          <img src="renders/mclarenf1_envmap_dld.png" alt="Render 4" />
+          <p>Mclaren F1 - with Environment Map and Deep Learning Denoising</p>
+        </div>
+        <div class="thumb" data-full="renders/mclarenf1_2_envmap_dld.png">
+          <img src="renders/mclarenf1_2_envmap_dld.png" alt="Render 5" />
+          <p>Mclaren F1 - with Environment Map and Deep Learning Denoising</p>
+        </div>
+      </div>
+	  
+	  <h3>Path Tracer Improvements</h3>
+	  <ul>
+		<li>HDR Environment Maps</li>
+		<li>OBJ Support</li>
+		<li>Resampled Importance Sampling</li>
+	  </ul>
+    </section>
+  </main>
+
+  <!-- Modal Viewer -->
+  <div id="modal" class="modal hidden">
+    <span id="modal-close">×</span>
+    <img id="modal-img" src="" alt="Full view">
+    <p id="modal-caption"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/gl-matrix-min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
