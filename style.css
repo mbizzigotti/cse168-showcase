@@ -54,6 +54,23 @@ header p {
 	color: rgb(152, 222, 255);
 	border-radius: 0.5rem;
 	padding: 0.3rem;
+	border: 1px solid #00000000;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: border 0.3s ease, transform 0.3s ease;
+}
+
+.header-content a:hover {
+	color: white;
+	border: 1px solid rgba(255,255,255, 0.5);
+    transform: scale(1.05);
+}
+
+.blurred-box {
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent solid color */
+  backdrop-filter: blur(10px);               /* Applies blur to what's behind */
+  -webkit-backdrop-filter: blur(10px);       /* Safari support */
+  border-radius: 12px;
+  color: white;
 }
 
 main {

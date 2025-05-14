@@ -1012,7 +1012,9 @@ const mesh = await loadOFF("./teapot.off");
     uniform mat4 u_model;
     uniform mat4 u_view;
     uniform mat4 u_proj;
+    varying vec3 v_position;
     void main() {
+	  v_position = a_position;
       gl_Position = u_proj * u_view * u_model * vec4(a_position, 1.0);
     }
   `;
@@ -1020,8 +1022,9 @@ const mesh = await loadOFF("./teapot.off");
   // === Fragment shader source ===
   const fsSource = `
     precision mediump float;
+    varying vec3 v_position;
     void main() {
-      gl_FragColor = vec4(0.05, 0.05, 0.05, 1.0);
+      gl_FragColor = vec4(v_position, 1.0);
     }
   `;
 
