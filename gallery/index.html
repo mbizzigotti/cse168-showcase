@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rendering Portfolio</title>
+  <style>
+	body {
+		height: 100vh;
+		margin: 0;
+		background-image: 
+			repeating-linear-gradient( 45deg, #000, #000 5px, transparent 5px, transparent 10px),
+			repeating-linear-gradient(-45deg, #000, #000 5px, transparent 5px, transparent 10px);
+		background-size: 10px 10px;
+		background-color: #222; /* optional base color */
+	}
+	#content {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+		gap: 1.2rem;
+		margin-top: 1rem;
+	}
+	.thumb {
+		cursor: pointer;
+		background: #222;
+		height: fit-content;
+	}
+	.thumb img {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: 4px;
+	}
+  </style>
+</head>
+<body>
+	<div id="content">
+	</div>
+</body>
+<script>
+	const images = [
+		'cornellBoxWithSpheres.png',
+		'mclarenf1_2.png',
+		'mclarenf1_2_envmap_dld.png',
+		'mclarenf1.png',
+		'mclarenf1_camera2.png',
+		'mclarenf1_envmap_dld.png',
+		'bear.png',
+		'bear2.png',
+		'bear3.png',
+		'bear4.png',
+		'bear5.png',
+		'bear6.png',
+		'dcornellBoxWithSpheres.png',
+		'dbear1.png',
+		'dbear2.png',
+		'dbear3.png',
+		'dbear4.png',
+		'P1.png',
+	]
+	
+	images.forEach(image => {
+		const div = document.createElement("div");
+		const img = document.createElement("img");
+
+		div.classList.add("thumb");
+		img.src = `../renders/${image}`;
+		div.appendChild(img);
+		div.addEventListener('click', e => window.location.href = `../renders/${image}`);
+
+		content.appendChild(div);
+	});
+</script>
+</html>
