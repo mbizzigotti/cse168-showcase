@@ -1,0 +1,86 @@
+body {
+	margin: 0;
+	font-family: 'Segoe UI', sans-serif;
+	background: #111;
+	color: #AAA;
+}
+
+h1 {
+	color: #EEE;
+	background-color: black;
+	width: 100%;
+}
+
+header {
+	text-align: center;
+	color: white;
+	margin-top: 0;
+	width: 100%;
+}
+
+figcaption {
+	font-style: italic;
+	color: #CCC;
+}
+
+/* Container for the images */
+.gallery {
+	display: flex;
+	justify-content: center;
+	gap: 20px; /* Space between images */
+	/*flex-wrap: wrap; /* Ensure images wrap on smaller screens */
+	margin: 20px;
+}
+
+/* Each figure element (image + caption) */
+.gallery figure {
+	text-align: center;
+	margin: 0;
+	max-width: max-content;
+	/*max-width: 300px; /* Prevent images from getting too wide */
+	/*width: 100%; /* Ensure figures take up all available space within the max-width */
+}
+
+/* Styling for the images */
+.gallery img {
+	width: 100%; /* Makes the image scale within its container */
+	height: auto; /* Maintain aspect ratio */
+	max-width: 100%; /* Prevent images from growing larger than their container */
+	border-radius: 8px; /* Optional rounded corners */
+	cursor: pointer;
+}
+
+/* Caption styling */
+.gallery figcaption {
+	margin-top: 10px;
+	font-size: 14px;
+}
+
+main {
+	border-radius: 10px;
+	margin: 1.5em .5em .5em .5em;
+	padding: 1em;
+	background: #1F1F1F;
+	color: #ddd;
+	position: relative;
+	z-index: 1;
+}
+
+section {
+  padding: 1rem 3rem 2rem 3rem;
+  border-bottom: 2px solid #252525
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.code {
+	font-family: monospace;
+	background-color: #111;
+	padding: 2px;
+	border-radius: 4px;
+}

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rendering Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<header>
+		<h1>Final Project</h1>
+		<h3>UCSD CSE 168 Computer Graphics: Rendering II</h3>
+		
+		<div>
+			<a>Mitchell Bizzigotti</a>,
+			<a>Amaan Mohammed</a>
+		</div>
+	</header>
+
+	<main>
+		<section>
+			<h2>Introduction</h2>
+			Through this project, techniques from the NVIDIA ReSTIR Global Illumination paper
+			will be implemented on top of the basic path tracer developed in CSE 168 with Monte
+			Carlo path tracing, next event estimation, Russian Roulette technique, and importance
+			sampling. While a basic path tracer samples paths independently per pixel, ReSTIR
+			introduces path reuse across frames and across neighboring pixels. This reduces
+			calculation costs per pixel and the combining of multiple, even low quality samples,
+			can produce a high quality sample per pixel. This allows one to gain high quality
+			renders even in resource constricted environments. Implementing this technique involves
+			several steps including sampling multiple paths per pixel with unbiased contribution
+			weights per candidate, implementing reservoir sampling to select one candidate, combine
+			this selected reservoir with the previous frame’s reservoir, pulling in neighboring
+			sample contributions, then accumulating all this information into a final pixel color.
+			This results in each pixel having an output radiance, direction, contribution weight,
+			and reservoir for use with neighboring samples and future frames. With this technique
+			it is hoped that renders will be more computationally efficient and have less noise
+			especially in resource constrained environments. The final project includes many
+			features and optimizations on top of the path tracer built throughout CSE 168.
+
+			<div class="gallery">
+				<figure>
+					<img src="../renders/bear-restir.png" alt="bear-restir.png">
+					<figcaption>Final Hero Render with ReSTIR and Dielectric</figcaption>
+				</figure>
+			</div>
+
+			Deliverables:
+			<ul>
+				<li>Refactoring Code</li>
+				<li>OptiX Denoiser</li>
+				<li>Environmental Maps</li>
+				<li>Object Importing</li>
+				<li>Texture/Normal Maps</li>
+				<li>Resampled Importance Sampling (RIS)</li>
+				<li>Dielectric Material</li>
+				<li>funLight Generation</li>
+				<li>ReSTIR</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>Refactoring Code</h2>
+			This phase involved shifting sampling methods, probability density functions,
+			and helper code to separate functions for cleaner, initial Path Tracer code.
+		</section>
+
+		
+		<section>
+			<h2>Denoiser</h2>
+			<pre>Renderer.cpp</pre>
+			This deliverable involved including/turning on the built-in
+			deep learning denoiser provided with OptiX.
+		</section>
+
+		<section>
+ 			<h2>Environmental Maps</h2>
+			<pre>SceneLoader.cpp</pre>
+			This part of the code added in an environmental map which when a ray misses
+			an intersection and defaults to background color, instead add in an environmental
+			map to be used as background. This environmental map (sampled in hit program)
+			provides realistic looking background graphics. Incorporating this required
+			loading of maps in host code and passing to OptiX. 
+			
+			<div class="gallery">
+				<figure>
+					<img src="../renders/bear2.png" alt="bear-restir.png">
+					<figcaption>Final Hero Render with ReSTIR and Dielectric</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/bear3.png" alt="bear-restir.png">
+					<figcaption>Final Hero Render with ReSTIR and Dielectric</figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<section>
+			<h2>Object Importing & Texture/Normal Mapping</h2>
+			<pre>SceneLoader.cpp</pre>
+			This part of the project built compatibility with ".obj" 3D models in Path Tracer scenes.
+			
+			<div class="gallery">
+				<figure>
+					<img src="../renders/P1t.png" alt="P1t.png">
+					<figcaption>McLaren P1 with texture mapping</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/shark.png" alt="shark.png">
+					<figcaption>Shark without normal mapping</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/shark-n.png" alt="shark-n.png">
+					<figcaption>Shark with normal mapping</figcaption>
+				</figure>
+			</div>
+		</section>
+		<section>
+			<h2>Resampled Importance Sampling (RIS)</h2>
+			<pre>PathTracer.cu</pre>
+
+			Two versions of this sampling method were implemented with version 2 being used for ReSTIR.
+			In version 1, this sampling method takes a generated sample based on a given BRDF
+			(GGX, dielectric, Phong, etc.) and stores the generated direction as a candidate. The weight
+			of this direction candidate is then calculated using the BRDF and light probability density
+			function. These weights are stored in an array as well. The same process of generating sample
+			directions and weight candidates is also then done across quadlights. After RIS sample
+			candidates and their associated weights are generated from both the BRDF and quadlights, a
+			candidate is randomly chosen for use, using the weights as probability distribution for
+			selection. The contribution of the chosen candidate is scaled using a factor incorporating
+			the number of samples as well as the BRDF's pdf. With version 2, rather than using generated
+			direction for samples, points on light sources were used instead. This modification is
+			required for compatibility for spatial reuse in ReSTIR as when using direction for sampling,
+			one is not guaranteed to hit a light.
+
+			<div class="gallery">
+				<figure>
+					<img src="../renders/mis.png" alt="mis.png">
+					<figcaption>Veach Scene (MIS, 128spp)</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/nee.png" alt="nee.png">
+					<figcaption>Veach Scene (NEE, 128spp)</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/ris.png" alt="ris.png">
+					<figcaption>Veach Scene (RIS, 128spp)</figcaption>
+				</figure>
+			</div>
+
+			As can be seen in these images, the RIS render reduces overall variance compared to the
+			other techniques. Yet, the MIS render is able to handle specular reflections better because our
+			RIS is only using light sampling. The RIS render is very similar to the NEE render but using a
+			lower sample count for the same quality
+		</section>
+		<section>
+			<h2>Dielectric Material</h2>
+			<pre>PathTracer.cu</pre>
+
+			This function models how light interacts with dielectric material supporting internal reflection,
+			reflection, and refraction based on the Fresnel factor which describes reflection of light on the
+			incident interface. Firstly, the index of refraction and Fresnel factor are calculated. Next,
+			based on the incident direction and index of refraction and fresnel it is determined whether the
+			light has total internal reflection, reflects, or refracts. If the light has total internal
+			reflection the outgoing direction is set to the mirror of the incoming ray and BSDF and PDF are to
+			1.0 to model full energy reflection. If a randomly generate value is below fresnel the ray
+			reflects in the mirror direction, the PDF is set to Fresnel value and the BSDF is set to 1.0 to
+			indicate reflection. Lastly, if the random value is less than the Fresnel value, the ray refraction
+			direction is calculated, the PDF is set to the refraction probability (1-Fresnel) and lastly, the
+			BSDF is set to eta^2 by the refraction probability. This process probabilistically models light's
+			behavior with dielectric materials. After a calculating whether an incident light ray reflects,
+			refracts, etc. this algorithm produces the rendering appearance of transparent materials like glass
+			or water.
+			
+			<div class="gallery">
+				<figure>
+					<img src="../renders/dbear1.png" alt="dbear1.png">
+					<figcaption>Dielectric Bear</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/dbear4.png" alt="dbear4.png">
+					<figcaption>Dielectric Bear with Spotlights</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/dcornellBoxWithSpheres.png" alt="dcornellBoxWithSpheres.png">
+					<figcaption>Dielectric Cornell Box</figcaption>
+				</figure>
+			</div>
+		</section>
+		<section>
+			<h2>funLight Generation</h2>
+			<pre>SceneLoader.cpp</pre>
+
+			This is a small function that generates "N" colorful QuadLights around a given model at (0, 0, 0).
+			This allows for observance of light interactions with materials at high light source counts.
+			It provides useful infrastructure for debugging and testing dielectric materials, RIS, and ReSTIR methods.
+			
+			<div class="gallery">
+				<figure>
+					<img src="../renders/fl4.png" alt="fl4.png">
+					<figcaption>Dielectric Bear with Spotlights</figcaption>
+				</figure>
+			</div>
+		</section>
+		<section>
+			<h2>ReSTIR</h2>
+			<pre>PathTracer.cu</pre>
+
+			This code primarily implements the spatial reuse of ReSTIR due to the render scene being static.
+			This method reuses spatial samples stored in reservoirs to resample light paths. This allows
+			for the handling of many lights efficiently and producing noise-free results with fewer samples.
+			To begin, first a direct lighting Reservoir is created which stores a single light sample
+			(point, intensity, and index) as wells as the light sample's weight. Next, starting with the
+			first frame "canonical" samples are generated per emitter present in the scene. Sample
+			probability and weights are determined using the number of samples and a sample probability
+			density function. One candidate is then probabilistically selected and added to a reservoir
+			buffer. In subsequent frames, each pixel gets these reservoirs from spatial neighbors, then
+			applies spatial importance resampling to select a new reservoir from pixel and neighbors. The
+			newly resampled light sample has its contribution then evaluated. There are 4 key componeents to
+			this method. First, is the <span class="code">generate_canonical</span> method which creates candidate sample for the
+			current pixel, builds a reservoir and resamples based on the BRDF and light. Next, is the
+			<span class="code">evaluate_sample</span> method which calculates the actual contribution of a light sample given a
+			reservoir and intersection to check. Lastly, are the reservoir buffers which store neighboring
+			pixel samples across frames in Renderer.cpp. Currently, this method of ReSTIR only considers the
+			use of spatial reuse and not both spatial and temporal reuse. This is because the scenes rendered
+			are static and don't change over time removing the relevance of motion vectors and frame-to-frame
+			accumulation (camera doesn't move either in scene).
+
+			<div class="gallery">
+				<figure>
+					<img src="../renders/bias-restir.png" alt="bias-restir.png">
+					<figcaption>Biased ReSTIR Progress with Incorrect Weights</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/un-restir.png" alt="un-restir.png">
+					<figcaption>ReSTIR with Corrected Weights</figcaption>
+				</figure>
+			</div>
+			<div class="gallery">
+				<figure>
+					<img src="../renders/untitled-mis.png" alt="untitled-mis.png">
+					<figcaption>Cubes (MIS, 8spp)</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/untitled-ris.png" alt="untitled-ris.png">
+					<figcaption>Cubes (RIS, 8spp)</figcaption>
+				</figure>
+				<figure>
+					<img src="../renders/untitled-restir.png" alt="untitled-restir.png">
+					<figcaption>Cubes (ReSTIR, 8spp)</figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<section>
+  		<h2>References</h2>
+			<div class="reference">
+				<p><strong>Wyman, Chris</strong>, Kettunen, Markus, Lin, Daqi, Bitterli, Benedikt, Yuksel, Cem, Jarosz, Wojciech, Kozlowski, Pawel (2023). 
+				<em>A Gentle Introduction to ReSTIR Path Reuse in Real-Time</em>. 
+				<a href="https://intro-to-restir.cwyman.org/presentations/2023ReSTIR_Course_Notes.pdf" target="_blank">PDF</a>. 
+				<a href="https://doi.org/10.1145/3587423.3595511" target="_blank">DOI: 10.1145/3587423.3595511</a>. 
+				Journal: ACM SIGGRAPH 2023 Courses.</p>
+			</div>
+			<div class="reference">
+				<p><strong>Bitterli, Benedikt</strong>, Wyman, Chris, Pharr, Matt, Shirley, Peter, Lefohn, Aaron, Jarosz, Wojciech (2020). 
+				<em>Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting</em>. 
+				<a href="https://doi.org/10.1145/3386569.3392481" target="_blank">DOI: 10.1145/3386569.3392481</a>. 
+				Journal: ACM Transactions on Graphics, Volume 39.</p>
+			</div>
+				<div class="reference">
+				<p><strong>Dielectric BSDF</strong> (2023). 
+				<a href="https://pbr-book.org/4ed/Reflection_Models/Dielectric_BSDF" target="_blank">PBR-Book.org</a>.</p>
+			</div>
+		</section>
+		
+		<p style="color: gray; text-align: right; padding-right: 1rem">Mitchell & Amaan ‒ Spring 2025</p>
+	</main>
+</body>
+<script>
+	document.querySelectorAll("img").forEach(image => {
+		image.addEventListener("click", e=>window.location.href = image.src);
+	});
+</script>
+</html>
